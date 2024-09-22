@@ -8,6 +8,7 @@ from pathlib import Path
 from datetime import datetime
 from time import sleep
 import csv
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 app = Flask(__name__)
 
@@ -15,10 +16,16 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # SSH configuration for RPIs
-USERNAME = "root"
+USERNAME = "fleetroot"
 PASSWORD = "root"
 SSH_PORT = 22
-rpi_hostnames = ["rpi1.local", "rpi2.local"]  # All RPIs
+
+# Dynamically discover RPIs
+MAX_RPIS = 20  # Maximum number of RPIs to discover
+RPI_NAME_PREFIX = "rpi"  # Prefix for RPI hostnames
+DOMAIN_SUFFIX = ".local"  # Domain suffix
+
+rpi_hostnames = []  # Dynamic list of discovered RPIs
 
 test_running = False  # Global flag for test status
 DATA_COLUMNS = [
@@ -149,6 +156,37 @@ def log_system_parameters_to_csv(rpi_metrics, output_file, test_stage):
         graph_data.append(graph_entry)
         if len(graph_data) > MAX_GRAPH_DATA:
             graph_data.pop(0)
+
+# Function to discover RPIs dynamically
+def discover_rpi_hostnames():
+    global rpi_hostnames
+    discovered = []
+    logging.info("Starting discovery of RPIs...")
+
+    def check_hostname(index):
+        hostname = f"{RPI_NAME_PREFIX}{index}{DOMAIN_SUFFIX}"
+        try:
+            socket.gethostbyname(hostname)
+            logging.info(f"Discovered RPI: {hostname}")
+            return hostname
+        except socket.error:
+            return None
+
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        # Submit all hostname checks concurrently
+        future_to_hostname = {executor.submit(check_hostname, i): i for i in range(1, MAX_RPIS + 1)}
+        for future in as_completed(future_to_hostname):
+            hostname = future.result()
+            if hostname:
+                discovered.append(hostname)
+            if len(discovered) >= MAX_RPIS:
+                break  # Limit to MAX_RPIS
+
+    rpi_hostnames = discovered
+    logging.info(f"Discovered RPIs: {rpi_hostnames}")
+
+# Run hostname discovery at startup
+discover_rpi_hostnames()
 
 # Run stress tests for all RPIs and collect data at intervals
 def run_stress_tests(duration_hours, log_frequency_seconds, save_path):
