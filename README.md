@@ -38,8 +38,11 @@ Step 1: Install Python
 
 Step 2: Clone the Repository
     Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
+
     Clone the project repository:
+
         git clone <https://github.com/your-repository/link>
+
         cd your-repository/link
 
 Step 3: Setup Virtual Environment
@@ -62,9 +65,13 @@ Step 4: Install Dependencies
 Minimal requirements.txt
 
 Flask==2.3.2
+
 Jinja2==3.1.2
+
 MarkupSafe==2.1.2
+
 paramiko==3.2.0
+
 pandas==2.1.0
 
 3. Running the Flask App
