@@ -1,12 +1,13 @@
+import time  # Already included
 from flask import Flask, render_template, jsonify, request
 import paramiko
 import socket
 import threading
 import logging
 import os
-import pandas as pd
 from datetime import datetime
 from time import sleep
+import csv
 
 app = Flask(__name__)
 
@@ -20,24 +21,17 @@ SSH_PORT = 22
 rpi_hostnames = ["rpi1.local", "rpi2.local"]  # All RPIs
 
 test_running = False  # Global flag for test status
-
-# Columns for Excel Data
 DATA_COLUMNS = [
-    "Date", "Time", "Core Voltage", "CPU Temp", "CPU Frequency (MHz)",
-    "Load Average", "Memory Usage", "Throttled Status"
+    "Date", "Time", "RPI", "Core Voltage", "CPU Temp", "CPU Frequency (MHz)",
+    "Load Average", "Memory Usage", "Throttled Status", "Test Stage"
 ]
 
-def check_hostname(hostname):
-    try:
-        socket.gethostbyname(hostname)
-        return True
-    except socket.error:
-        logging.error(f"Hostname resolution failed for {hostname}")
-        return False
+# Initialize a thread lock for graph_data
+graph_data_lock = threading.Lock()
+graph_data = []  # Collect all metrics here for graph display
+MAX_GRAPH_DATA = 1000  # Maximum number of entries to store
 
 def run_ssh_command(hostname, command):
-    if not check_hostname(hostname):
-        return None
     try:
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -50,150 +44,155 @@ def run_ssh_command(hostname, command):
         logging.error(f"Error connecting to {hostname}: {e}")
         return None
 
-def collect_data(rpi, num_runs, run_interval_seconds):
-    """ Collects metrics from the RPI at set intervals """
-    data = []
-    for run in range(num_runs):
-        if not test_running:
-            break  # Exit early if the test is stopped
-        current_time = datetime.now()
-        entry = {
-            "Date": current_time.strftime("%m/%d/%Y"),
-            "Time": current_time.strftime("%H:%M:%S"),
-            "Core Voltage": "0.97",  # Simulated data
-            "CPU Temp": "33.1",
-            "CPU Frequency (MHz)": "2000.478",
-            "Load Average": "0.13",
-            "Memory Usage": "Used: 356MB, Free: 284MB",
-            "Throttled Status": "0x0"
-        }
-        data.append(entry)
-        sleep(run_interval_seconds)  # Simulate a pause between data collection intervals
-    return data
+# Collect metrics from RPI
+def collect_metrics_rpi(hostname):
+    core_voltage = run_ssh_command(hostname, "vcgencmd measure_volts core")
+    core_voltage = core_voltage.split('=')[1].replace('V', '') if core_voltage else 'N/A'
 
-@app.route('/')
-def index():
-    """ Render the main dashboard with active RPIs """
-    threads = []
-    results = {}
+    cpu_temp = run_ssh_command(hostname, "vcgencmd measure_temp")
+    cpu_temp = cpu_temp.split('=')[1].replace("'C", "") if cpu_temp else 'N/A'
 
-    def update_result(hostname):
-        if run_ssh_command(hostname, "echo 'ping'"):
-            results[hostname] = run_ssh_command(hostname, "hostname")
+    cpu_freq = run_ssh_command(hostname, "vcgencmd measure_clock arm")
+    cpu_freq = cpu_freq.split('=')[1] if cpu_freq else 'N/A'
 
-    for hostname in rpi_hostnames:
-        thread = threading.Thread(target=update_result, args=(hostname,))
-        threads.append(thread)
-        thread.start()
+    load_average = run_ssh_command(hostname, "cat /proc/loadavg")
+    load_average = load_average.split()[0] if load_average else 'N/A'
 
-    for thread in threads:
-        thread.join()
+    memory_usage = run_ssh_command(hostname, "free -m")
+    memory_usage = memory_usage.splitlines()[1].split()[2] + "MB" if memory_usage else 'N/A'
 
-    return render_template('index.html', active_rpis=results)
+    throttled_status = run_ssh_command(hostname, "vcgencmd get_throttled")
+    throttled_status = throttled_status.split('=')[1] if throttled_status else 'N/A'
 
-@app.route('/run_tests', methods=['POST'])
-def run_tests():
-    """ Run tests for all RPIs for the selected duration and log progress """
+    return {
+        "core_voltage": core_voltage,
+        "cpu_temp": cpu_temp,
+        "cpu_freq": cpu_freq,
+        "load_average": load_average,
+        "memory_usage": memory_usage,
+        "throttled_status": throttled_status
+    }
+
+# Thread to run stress tests on RPI
+def run_stress_test_rpi(hostname, stress_test_duration_seconds):
+    try:
+        run_ssh_command(hostname, f"stress-ng --cpu 4 --timeout {stress_test_duration_seconds}s")
+    except Exception as e:
+        logging.error(f"Error running stress test on {hostname}: {e}")
+
+# Logging system parameters and saving to the output file
+def log_system_parameters_to_csv(rpi_metrics, output_file, test_stage):
+    global graph_data
+    current_time = datetime.now()
+    with open(output_file, 'a', newline='') as file:
+        csv_writer = csv.writer(file)
+        for rpi, metrics in rpi_metrics.items():
+            row = [
+                current_time.strftime("%Y-%m-%d"),
+                current_time.strftime("%H:%M:%S"),
+                rpi,
+                metrics['core_voltage'],
+                metrics['cpu_temp'],
+                metrics['cpu_freq'],
+                metrics['load_average'],
+                metrics['memory_usage'],
+                metrics['throttled_status'],
+                test_stage
+            ]
+            csv_writer.writerow(row)
+    # Append to graph data with thread safety
+    with graph_data_lock:
+        graph_entry = {"time": current_time.strftime("%H:%M:%S")}
+        for rpi, metrics in rpi_metrics.items():
+            graph_entry[rpi] = {
+                "cpu_temp": metrics['cpu_temp'],
+                "cpu_freq": metrics['cpu_freq'],
+                "core_voltage": metrics['core_voltage'],
+                "load_average": metrics['load_average']
+            }
+        graph_data.append(graph_entry)
+        if len(graph_data) > MAX_GRAPH_DATA:
+            graph_data.pop(0)
+
+# Run stress tests for all RPIs and collect data at intervals
+def run_stress_tests(duration_hours, log_frequency_seconds, save_path):
     global test_running
     test_running = True
 
-    duration_hours = int(request.form.get('duration'))
-    save_path = request.form.get('save_path') or os.getcwd()  # Default to current directory
-    run_interval_seconds = 60  # Collect data every minute (adjust as needed)
-    total_seconds = duration_hours * 3600
-    num_runs = total_seconds // run_interval_seconds
+    stress_test_duration_seconds = duration_hours * 3600  # Convert to seconds
+    interval_seconds = log_frequency_seconds
+    total_duration = duration_hours * 3600  # Convert hours to seconds
+    end_time = time.time() + total_duration
 
-    results = []
+    output_file = os.path.join(save_path, f"stress_test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
+    
+    # Write the header for the CSV file
+    with open(output_file, 'w', newline='') as file:
+        csv_writer = csv.writer(file)
+        csv_writer.writerow(DATA_COLUMNS)
+
+    logging.info("Starting the stress test and logging system metrics")
+
+    # Start stress tests on each RPI in parallel
     threads = []
-
-    # Collect data for all RPIs in parallel
-    def collect_for_rpi(hostname):
-        rpi_data = collect_data(hostname, num_runs, run_interval_seconds)
-        df = pd.DataFrame(rpi_data, columns=DATA_COLUMNS)
-        output_path = os.path.join(save_path, f"{hostname}_test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx")
-        df.to_excel(output_path, index=False)
-        results.append({"rpi": hostname, "path": output_path})
-
     for hostname in rpi_hostnames:
-        thread = threading.Thread(target=collect_for_rpi, args=(hostname,))
+        thread = threading.Thread(target=run_stress_test_rpi, args=(hostname, stress_test_duration_seconds))
         threads.append(thread)
         thread.start()
 
-    for thread in threads:
-        thread.join()
+    while time.time() < end_time and test_running:
+        rpi_metrics = {}
+        for hostname in rpi_hostnames:
+            rpi_metrics[hostname] = collect_metrics_rpi(hostname)
 
-    return jsonify({"status": "success", "results": results})
-
-@app.route('/stop_test', methods=['POST'])
-def stop_test():
-    """ Stops the running test """
-    global test_running
-    test_running = False
-    return jsonify({"status": "Test stopped successfully"})
-
-@app.route('/progress/<duration>')
-def get_progress(duration):
-    """ Provides the current progress for a test """
-    duration_seconds = int(duration) * 3600
-    total_seconds = duration_seconds
-    progress_data = []
-
-    for elapsed_time in range(0, total_seconds, 60):  # Update every minute
-        if not test_running:
-            break  # Stop the progress if the test is halted
-        progress = (elapsed_time / total_seconds) * 100
-        progress_data.append({"progress": progress})
-        sleep(1)
-
-    if not progress_data:
-        return jsonify({"progress": 0})  # Return 0 if the test is stopped early
-
-    return jsonify({"progress": progress_data[-1]["progress"]})
-
-@app.route('/metrics/<hostname>')
-def get_rpi_metrics_route(hostname):
-    """ Returns metrics for a specific RPI """
-    metrics = get_rpi_metrics(hostname)
-    return jsonify(metrics)
-
-def get_rpi_metrics(hostname):
-    """ Gathers various metrics from an RPI """
-    metrics = {
-        'core_voltage': run_ssh_command(hostname, "vcgencmd measure_volts core").split('=')[1].replace('V', ''),
-        'cpu_temp': run_ssh_command(hostname, "vcgencmd measure_temp").split('=')[1].replace("'C", ""),
-        'cpu_freq_mhz': str(float(run_ssh_command(hostname, "vcgencmd measure_clock arm").split('=')[1]) / 1000000),
-        'load_average': run_ssh_command(hostname, "cat /proc/loadavg").split()[0],
-        'memory_usage': run_ssh_command(hostname, "free -m").splitlines()[1].split()[2] + "MB",
-        'throttled_status': run_ssh_command(hostname, "vcgencmd get_throttled").split('=')[1]
-    }
-    return metrics
-
-@app.route('/run_command', methods=['POST'])
-def run_command():
-    """Run a custom command on all RPIs and return the result."""
-    command = request.form.get('command')
-    results = {}
-
-    def run_on_rpi(hostname):
-        result = run_ssh_command(hostname, command)
-        if result:
-            results[hostname] = result
-        else:
-            results[hostname] = "No result or connection error"
-
-    # Create threads for each RPI to run commands in parallel
-    threads = []
-    for hostname in rpi_hostnames:
-        thread = threading.Thread(target=run_on_rpi, args=(hostname,))
-        threads.append(thread)
-        thread.start()
+        # Log the metrics to the CSV file
+        log_system_parameters_to_csv(rpi_metrics, output_file, "Stress Test")
+        
+        # Sleep until the next logging interval
+        sleep(interval_seconds)
 
     # Wait for all threads to finish
     for thread in threads:
         thread.join()
 
-    return jsonify(results)
+    logging.info(f"Stress test completed. Results saved to {output_file}")
+    return output_file
 
+@app.route('/')
+def index():
+    return render_template('index.html', active_rpis=rpi_hostnames)
+
+@app.route('/run_tests', methods=['POST'])
+def run_tests():
+    global test_running
+    test_running = True
+
+    try:
+        duration_hours = float(request.form.get('duration'))
+        log_frequency_seconds = float(request.form.get('log_frequency', 60))
+        save_path = request.form.get('save_path') or os.getcwd()  # Default to current directory
+    except (ValueError, TypeError):
+        return jsonify({"status": "error", "message": "Invalid input parameters."}), 400
+
+    # Run stress tests for all RPIs and collect data in a separate thread
+    threading.Thread(target=run_stress_tests, args=(duration_hours, log_frequency_seconds, save_path)).start()
+    
+    return jsonify({"status": "success", "message": "Stress tests started."})
+
+@app.route('/stop_test', methods=['POST'])
+def stop_test():
+    global test_running
+    test_running = False
+    return jsonify({"status": "success", "message": "Test stopped successfully"})
+
+# Collect data for graph display
+@app.route('/live_metrics', methods=['GET'])
+def live_metrics():
+    with graph_data_lock:
+        if graph_data:
+            return jsonify(graph_data[-1])  # Single entry with time and all RPIs
+        else:
+            return jsonify({"error": "No metrics available yet"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
