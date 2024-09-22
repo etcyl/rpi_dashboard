@@ -22,6 +22,8 @@
             height: 20px;
             -webkit-animation: spin 1s linear infinite;
             animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
         }
 
         @keyframes spin {
@@ -60,7 +62,7 @@
                     <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                         {{ hostname }}
                         <span>
-                            <button class="btn btn-primary btn-sm" onclick="fetchMetrics('{{ hostname }}')">Run vcgencmd test</button>
+                            <button class="btn btn-primary btn-sm run-vcg-btn" data-hostname="{{ hostname }}">Run vcgencmd test</button>
                         </span>
                     </a>
                     {% endfor %}
@@ -111,10 +113,7 @@
                         <label for="duration" class="form-label">Test Duration (Hours)</label>
                         <input type="number" id="duration" class="form-control" placeholder="Enter hours" min="1" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="save_path" class="form-label">Save Run Log Path</label>
-                        <input type="text" id="save_path" class="form-control" placeholder="Enter folder path (optional)">
-                    </div>
+                    <!-- Removed Save Path Input Field -->
                     <button type="button" id="run-tests-btn" class="btn btn-primary" onclick="runTests()">Run All Tests</button>
                     <button type="button" id="stop-tests-btn" class="btn btn-danger" style="display: none;" onclick="stopTest()">Stop Test</button>
                 </form>
@@ -151,12 +150,68 @@
         </div>
 
         <div id="result-section" style="display:none;" class="alert alert-success">
-            <strong>Success!</strong> Results saved to: <span id="file-path"></span>
+            <strong>Success!</strong> Results saved to the current directory.
         </div>
     </div>
 
     <script>
-        // Removed fetchMetrics function since /metrics/<hostname> endpoint is not defined
+        // Function to fetch metrics for a specific RPI
+        function fetchMetrics(hostname) {
+            const button = $(`button[data-hostname="${hostname}"]`);
+            button.prop("disabled", true);
+            const originalText = button.html();
+            button.html("<div class='loader'></div> Running...");
+
+            $.post("/run_vcg_cmd", { hostname: hostname }, function(response) {
+                if (response.status === "success") {
+                    const data = response.data;
+                    // Update the Test Output table
+                    const rowId = `row-${hostname}`;
+                    let row = $(`#${rowId}`);
+                    if (row.length === 0) {
+                        // If row doesn't exist, create it
+                        row = $("<tr>").attr("id", rowId);
+                        row.append($("<td>").text(hostname));
+                        row.append($("<td>").text(data.core_voltage));
+                        row.append($("<td>").text(data.cpu_temp));
+                        row.append($("<td>").text(data.cpu_freq));
+                        row.append($("<td>").text(data.load_average));
+                        row.append($("<td>").text(data.memory_usage));
+                        row.append($("<td>").text(data.throttled_status));
+                        $("#test-output-body").append(row);
+                    } else {
+                        // Update existing row
+                        row.find("td").eq(1).text(data.core_voltage);
+                        row.find("td").eq(2).text(data.cpu_temp);
+                        row.find("td").eq(3).text(data.cpu_freq);
+                        row.find("td").eq(4).text(data.load_average);
+                        row.find("td").eq(5).text(data.memory_usage);
+                        row.find("td").eq(6).text(data.throttled_status);
+                    }
+                } else {
+                    alert(`Error: ${response.message}`);
+                }
+            })
+            .always(function() {
+                // Re-enable the button and restore original text
+                button.prop("disabled", false);
+                button.html(originalText);
+            })
+            .fail(function() {
+                alert("Failed to run vcgencmd test.");
+                button.prop("disabled", false);
+                button.html(originalText);
+            });
+        }
+
+        // Handle click events for "Run vcgencmd test" buttons using event delegation
+        $(document).ready(function() {
+            $(".run-vcg-btn").click(function(event) {
+                event.preventDefault();
+                const hostname = $(this).data("hostname");
+                fetchMetrics(hostname);
+            });
+        });
 
         function runAllCommand() {
             const command = $("#custom-command").val();
@@ -179,7 +234,7 @@
 
         function runTests() {
             const duration = $("#duration").val();
-            const savePath = $("#save_path").val() || "{{ default_directory }}"; // Set default directory path
+            // No longer need to get savePath from input
 
             if (!duration || duration <= 0) {
                 alert("Please enter a valid duration in hours.");
@@ -192,8 +247,8 @@
 
             $.post("/run_tests", {
                 duration: duration,
-                log_frequency: 60, // Assuming log_frequency is 60 seconds
-                save_path: savePath
+                log_frequency: 60  // Assuming log_frequency is 60 seconds
+                // No longer sending save_path
             }, function(response) {
                 console.log(response.message);
             }).fail(function() {
@@ -428,9 +483,7 @@
                     const dataset = chart.data.datasets.find(ds => ds.label === rpi);
                     if (dataset) {
                         let value = metrics[metricKey];
-                        // Convert to float if possible
-                        value = parseFloat(value);
-                        if (isNaN(value)) value = null;
+                        // No need to convert since backend already formats cpu_freq
                         dataset.data.push(value);
                         // Limit data points
                         if (dataset.data.length > 100) { // Adjust as needed
