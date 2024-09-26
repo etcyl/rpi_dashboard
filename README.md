@@ -18,13 +18,13 @@ Use the provided ```rpi_static_ip.sh``` script to setup each Raspberry Pi with a
 This will follow a naming convention for dynamically detecting all of the RPIs on the network.
 
 ### Run the script with the hostname, static IP, and router gateway:
-    ```sudo ./rpi_static_ip.sh <hostname> <static_ip> <router_gateway>```
+    sudo ./rpi_static_ip.sh <hostname> <static_ip> <router_gateway
 
 ### Example usage for first rpi:
-    ```sudo ./rpi_static_ip.sh rpi1 192.168.0.10 192.168.0.1```
+    sudo ./rpi_static_ip.sh rpi1 192.168.0.10 192.168.0.1
 
 ### Example usage for second rpi:
-    ```sudo ./rpi_static_ip.sh rpi2 192.168.0.11 192.168.0.1```
+    sudo ./rpi_static_ip.sh rpi2 192.168.0.11 192.168.0.1
 
 The script will:
 *   Set the hostname
@@ -78,24 +78,29 @@ The rpis following the bash script naming convention will be periodically scanne
 *    Click Run All Tests to start the tests. The test progress will be displayed on the dashboard, and logs will be saved to the specified location.
 
 If you cannot connect to your RPIs via hostname (rpi1.local), ensure that avahi-daemon is installed on the Raspberry Pi:
-    ```sudo apt install avahi-daemon```
+
+    sudo apt install avahi-daemon
 
 Ensure that your Flask app is running on the correct port (default is 5000). You can change this in the app.py file:
-    ```app.run(host='0.0.0.0', port=5000)```
+
+    app.run(host='0.0.0.0', port=5000
 
 Check your firewall settings on Windows if you cannot access the Flask app from another device on the network.
 
 ## Create an executable
 Before creating the executable, make sure all required Python packages are installed. 
 You can install them using pip and the provided requirements.txt file:
-    ```pip install -r requirements.txt```
+
+    pip install -r requirements.txt
 
 ### Run the following command from the root directory to create an executable that includes the Flask app, templates, and static files:
-    ```pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py```
+
+    pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py
 
 Once the build is complete, the executable will be located in the dist folder. You can find the executable named app.exe (on Windows).
-    ```cd dist
-    ./app.exe  # On Windows```
+
+    cd dist
+    ./app.exe  # On Windows
 
 Upon running the executable:
     1. The Flask server will start.
