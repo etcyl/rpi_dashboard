@@ -14,6 +14,8 @@ This guide provides a step-by-step walkthrough of setting up the RPIs, the Flask
 -   **Run stress tests** for a specified number of hours and track progress
 -   **Log test outputs** to Excel files
 
+Windows 11 users can try downloading and running the executable from the GitHub app.exe file [here](https://github.com/etcyl/rpi_dashboard/blob/main/windows_exe/app.exe).
+
 Use the provided ```rpi_static_ip.sh``` [here](https://github.com/etcyl/rpi_dashboard/blob/main/rpi_static_ip.sh) script to setup each Raspberry Pi with a static IP and hostname.
 This will follow a naming convention for dynamically detecting all of the RPIs on the network.
 
@@ -89,7 +91,7 @@ Check your firewall settings on Windows if you cannot access the Flask app from 
 
 ## Create an executable
 Before creating the executable, make sure all required Python packages are installed.
-Windows 11 users can try running the executable in the GitHub [here](https://github.com/etcyl/rpi_dashboard/blob/main/windows_exe/app.exe).
+(A prebuilt Windows 11 app.exe file can be tried [here](https://github.com/etcyl/rpi_dashboard/blob/main/windows_exe/app.exe).)
 You can install them using pip and the provided requirements.txt file:
 
     pip install -r requirements.txt
