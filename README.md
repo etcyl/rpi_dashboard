@@ -39,8 +39,9 @@ Step 1: Install Python
 Step 2: Clone the Repository
     Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
     Clone the project repository:
-        ```git clone <https://github.com/your-repository/link>
-        cd your-repository/link```
+        ```git clone <https://github.com/your-repository/link>```
+        
+        ```cd your-repository/link```
 
 Step 3: Setup Virtual Environment
     Create a Python virtual environment:
@@ -68,11 +69,7 @@ Step 4: Install Dependencies
     If not, then open a browser and go to http://localhost:5000.
 
 You should see the Raspberry Pi Dashboard. It will list the available RPIs and allow you to run custom commands and tests.
-4. Configuring the Raspberry Pi List
-
-To change or add Raspberry Pis, modify the rpi_hostnames variable in the app.py file:
-
-```rpi_hostnames = ["rpi1.local", "rpi2.local"]```
+The rpis following the hostname naming convention will be periodically scanned for and any new devices will be added to the dashboard.
 
 Replace rpi1.local and rpi2.local with the hostnames or IP addresses of your Pis.
 5. Usage
