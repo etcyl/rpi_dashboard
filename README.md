@@ -23,6 +23,7 @@ Example usage for second rpi:
     ```sudo ./rpi_static_ip.sh rpi2 192.168.0.11 192.168.0.1```
 
 The script will:
+
     Set the hostname
     Enable SSH
     Configure a static IP
@@ -32,25 +33,31 @@ The script will:
     Once the script completes, reboot the Raspberry Pi to apply the changes.
 
 2. Setting Up the Flask App on Windows
-Step 1: Install Python
+
+Install Python
+
     Download and install Python for Windows.
     Ensure you check "Add Python to PATH" during the installation.
 
-Step 2: Clone the Repository
+Clone the Repository
+
     Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
     Clone the project repository:
         ```git clone <https://github.com/your-repository/link>
         cd your-repository/link```
 
 Setup Virtual Environment
+
     Create a Python virtual environment:
         ```python -m venv venv```
 
 Activate the virtual environment:
+
     On Windows:
         ```.\venv\Scripts\activate```
 
 On macOS/Linux:
+
         ```source venv/bin/activate```
 
 Install dependencies for the machine running the flask app
