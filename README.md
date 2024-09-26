@@ -1,5 +1,3 @@
-## Raspberry Pi Dashboard - Flask App
-
 ![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-21%20221403.png)
 ![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-22%20020506.png)
 ![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-22%20020601.png)
