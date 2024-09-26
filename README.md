@@ -56,8 +56,7 @@ On macOS/Linux:
 Step 4: Install Dependencies
 
     Install the dependencies from requirements.txt:
-
-    ```pip install -r requirements.txt```bash
+        ```pip install -r requirements.txt```bash
 
 3. Running the Flask App
 
@@ -90,111 +89,6 @@ Run All Tests
     Optionally specify a save path for the log files.
     Click Run All Tests to start the tests. The test progress will be displayed on the dashboard, and logs will be saved to the specified location.
 
-6. Additional Bash Script for RPi Setup (Optional)
-
-If you want to automate most of the Raspberry Pi setup, including hostname, static IP, and SSH, here is the rpi_static_ip.sh script you can use:
-
-#!/bin/bash
-
-# RPI Setup Script to automate configuration for Flask app
-# Run as: sudo ./rpi_static_ip.sh <hostname> <static_ip> <router_gateway>
-
-# Step 1: Check for sudo/root access
-if [[ $EUID -ne 0 ]]; then
-    echo "This script must be run as root. Use sudo."
-    exit 1
-fi
-
-# Step 2: Parse inputs
-HOSTNAME=$1
-STATIC_IP=$2
-GATEWAY_IP=$3
-LOG_DIR="/home/pi/logs"
-
-# Validate inputs
-if [ -z "$HOSTNAME" ] || [ -z "$STATIC_IP" ] || [ -z "$GATEWAY_IP" ]; then
-    echo "Usage: sudo $0 <hostname> <static_ip> <router_gateway>"
-    exit 1
-fi
-
-# Step 3: Set Hostname
-CURRENT_HOSTNAME=$(cat /etc/hostname | tr -d " \t\n\r")
-if [[ "$CURRENT_HOSTNAME" == "$HOSTNAME" ]]; then
-    echo "Hostname is already set to $HOSTNAME. Skipping this step."
-else
-    echo "Setting hostname to $HOSTNAME"
-    echo "$HOSTNAME" > /etc/hostname || error_exit "Failed to set hostname"
-    sed -i "s/127.0.1.1.*/127.0.1.1 $HOSTNAME/" /etc/hosts || error_exit "Failed to update /etc/hosts"
-    hostnamectl set-hostname "$HOSTNAME" || error_exit "Failed to apply hostname with hostnamectl"
-    echo "Hostname successfully set to $HOSTNAME"
-fi
-
-# Step 4: Enable SSH
-SSH_STATUS=$(systemctl is-enabled ssh 2>/dev/null)
-if [[ "$SSH_STATUS" == "enabled" ]]; then
-    echo "SSH is already enabled. Skipping this step."
-else
-    echo "Enabling SSH"
-    systemctl enable ssh || error_exit "Failed to enable SSH"
-    systemctl start ssh || error_exit "Failed to start SSH service"
-    echo "SSH enabled successfully"
-fi
-
-# Step 5: Configure Static IP
-# Check if the static IP is already configured
-```STATIC_IP_CONFIGURED=$(grep -F "$STATIC_IP" /etc/dhcpcd.conf 2>/dev/null)
-if [[ ! -z "$STATIC_IP_CONFIGURED" ]]; then
-    echo "Static IP $STATIC_IP is already configured. Skipping this step."
-else
-    echo "Configuring static IP: $STATIC_IP"
-    cp /etc/dhcpcd.conf /etc/dhcpcd.conf.bak || error_exit "Failed to back up dhcpcd.conf"
-    
-    cat <<EOF >> /etc/dhcpcd.conf
-interface eth0
-static ip_address=$STATIC_IP/24
-static routers=$GATEWAY_IP
-static domain_name_servers=8.8.8.8 8.8.4.4
-
-interface wlan0
-static ip_address=$STATIC_IP/24
-static routers=$GATEWAY_IP
-static domain_name_servers=8.8.8.8 8.8.4.4
-EOF
-    echo "Static IP $STATIC_IP successfully configured."
-fi```bash
-
-# Step 6: Install Required Packages
-```REQUIRED_PACKAGES=("net-tools")
-for package in "${REQUIRED_PACKAGES[@]}"; do
-    if dpkg -l | grep -q $package; then
-        echo "Package $package is already installed. Skipping."
-    else
-        echo "Installing package $package"
-        apt-get install -y $package || error_exit "Failed to install $package"
-    fi
-done```bash
-
-# Step 7: Create Log Directory
-if [ -d "$LOG_DIR" ]; then
-    echo "Log directory $LOG_DIR already exists. Skipping."
-else
-    echo "Creating log directory at $LOG_DIR"
-    mkdir -p "$LOG_DIR" || error_exit "Failed to create log directory"
-    chown $USER:$USER "$LOG_DIR" || error_exit "Failed to set ownership for log directory"
-    echo "Log directory created successfully at $LOG_DIR"
-fi
-
-# Step 8: Reboot
-read -p "Do you want to reboot now to apply changes? (y/n): " confirm
-if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
-    echo "Rebooting to apply changes..."
-    reboot
-else
-    echo "Reboot skipped. Please reboot manually for changes to take effect."
-fi
-
-echo "RPI Setup Completed."
-
 Troubleshooting
     If you cannot connect to your RPIs via hostname (rpi1.local), ensure that avahi-daemon is installed on the Raspberry Pi:
 
@@ -202,20 +96,19 @@ sudo apt install avahi-daemon
 
 Ensure that your Flask app is running on the correct port (default is 5009). You can change this in the app.py file:
 
-python
 
-app.run(host='0.0.0.0', port=5009)
+```app.run(host='0.0.0.0', port=5009)```python
 
 Check your firewall settings on Windows if you cannot access the Flask app from another device on the network.
 
 # Create an executable
 Before creating the executable, make sure all required Python packages are installed. You can install them using pip and the provided requirements.txt file:
 
-```pip install -r requirements.txt```
+```pip install -r requirements.txt```bash
 
 Run the following command from the root directory to create an executable that includes the Flask app, templates, and static files:
 
-pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py
+```pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py```python
 
 Once the build is complete, the executable will be located in the dist folder. You can find the executable named app.exe (on Windows).
 
