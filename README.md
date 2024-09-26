@@ -83,7 +83,7 @@ If you cannot connect to your RPIs via hostname (rpi1.local), ensure that avahi-
 
 Ensure that your Flask app is running on the correct port (default is 5000). You can change this in the app.py file:
 
-    app.run(host='0.0.0.0', port=5000
+    app.run(host='0.0.0.0', port=5000)
 
 Check your firewall settings on Windows if you cannot access the Flask app from another device on the network.
 
