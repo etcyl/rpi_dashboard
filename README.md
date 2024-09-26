@@ -1,13 +1,16 @@
 ## Raspberry Pi Dashboard - Flask App
 
+![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-21%20221403.png)
+![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-22%20020506.png)
+![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-22%20020601.png)
+
 This project is a Flask-based web dashboard to monitor and run commands on multiple Raspberry Pi devices remotely. The dashboard allows users to view key metrics, run custom commands, and run stress tests on all connected RPIs. This guide provides a step-by-step walkthrough of setting up the RPIs, the Flask app, and running it from a Windows PC.
-Features
+Features:
+
     Monitor Raspberry Pi metrics (CPU Temp, Core Voltage, CPU Frequency, etc.)
     Run custom commands on all connected RPIs
     Run stress tests for a specified number of hours and track progress
     Log test outputs to Excel files
-
-Raspberry Pi Setup - run the static ip and hostname script
 
 Use the provided rpi_static_ip.sh script to set up each Raspberry Pi with a static IP and hostname.
 
