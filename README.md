@@ -66,21 +66,25 @@ You should see the Raspberry Pi Dashboard. It will list the available RPIs and a
 The rpis following the hostname naming convention will be periodically scanned for and any new devices will be added to the dashboard.
 
 Replace rpi1.local and rpi2.local with the hostnames or IP addresses of your Pis.
-5. Usage
+
 Run vcgencmd Test
+
     The dashboard will list all connected RPIs.
     Click on Run vcgencmd test next to any RPI to retrieve and display metrics such as CPU Temp, Core Voltage, and more.
 
 Run Custom Commands
+
     Enter any Linux command in the Run Command on All RPIs field.
     Click Run All Command to execute the command across all connected RPIs and view the output.
 
 Run All Tests
+
     Enter a duration (in hours) for the test.
     Optionally specify a save path for the log files.
     Click Run All Tests to start the tests. The test progress will be displayed on the dashboard, and logs will be saved to the specified location.
 
 Troubleshooting
+    
     If you cannot connect to your RPIs via hostname (rpi1.local), ensure that avahi-daemon is installed on the Raspberry Pi:
 
 sudo apt install avahi-daemon
