@@ -2,105 +2,117 @@
 ![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-22%20020506.png)
 ![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-22%20020601.png)
 
-This project is a Flask-based web dashboard to monitor and run commands on multiple Raspberry Pi devices remotely. 
+# RaspberryPi Status Control Dashboard
+
+Flask-based web dashboard to monitor and run commands on multiple Raspberry Pi devices remotely. 
 The dashboard allows users to view specified metrics, run commands, and run stress tests on all connected RPIs. 
 This guide provides a step-by-step walkthrough of setting up the RPIs, the Flask app, and running it from a Windows PC.
-Features:
 
-    Monitor Raspberry Pi metrics (CPU Temp, Core Voltage, CPU Frequency, etc.)
-    Run custom commands on all connected RPIs
-    Run stress tests for a specified number of hours and track progress
-    Log test outputs to Excel files
+## Features:
+-  **Monitor Raspberry Pi metrics** (CPU Temp, Core Voltage, CPU Frequency, etc.)
+-   **Run custom commands on all connected RPIs**
+-   **Run stress tests** for a specified number of hours and track progress
+-   **Log test outputs** to Excel files
 
 Use the provided ```rpi_static_ip.sh``` script to setup each Raspberry Pi with a static IP and hostname.
 This will follow a naming convention for dynamically detecting all of the RPIs on the network.
 
-Run the script with the hostname, static IP, and router gateway:
+### Run the script with the hostname, static IP, and router gateway:
     ```sudo ./rpi_static_ip.sh <hostname> <static_ip> <router_gateway>```
 
-Example usage for first rpi:
+### Example usage for first rpi:
     ```sudo ./rpi_static_ip.sh rpi1 192.168.0.10 192.168.0.1```
 
-Example usage for second rpi:
+### Example usage for second rpi:
     ```sudo ./rpi_static_ip.sh rpi2 192.168.0.11 192.168.0.1```
 
 The script will:
-
-    Set the hostname
-    Enable SSH
-    Configure a static IP
-    Install required packages like net-tools
-    Create a log directory (/home/pi/logs)
+*   Set the hostname
+*   Enable SSH
+*   Configure a static IP
+*   Install required packages like net-tools
+*   Create a log directory (/home/pi/logs)
 
 Once the script completes, reboot the Raspberry Pi (the script will ask if you want to reboot) to apply the changes.
 
-Download and install Python for Windows.
-    Ensure you check "Add Python to PATH" during the installation.
+### Download and install Python for Windows.
+*   Ensure you check "Add Python to PATH" during the installation.
 
 Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
 
 Clone the project repository and create a Python venv:
 
+        ```bash
         git clone <https://github.com/etcyl/rpi_dashboard>
         cd rpi_dashboard
         python -m venv venv
         .\venv\Scripts\activate
+        ```
 
 On macOS/Linux:
-        ```source venv/bin/activate```
+        ```bash
+        source venv/bin/activate
+        ```
 
-Install dependencies for the machine running the flask app
-        ```pip install -r requirements.txt```
+### Install dependencies for the machine running the flask app
+        ```bash
+        pip install -r requirements.txt
+        ```
 
-Run the Flask App
+## Run the Flask App
     ```python app.py```
 
 The app should automatically open in the default browser (it may prompt you to allow the app).
-If not, then open a browser and go to http://localhost:5000.
+If not, then open a browser and go to ```http://localhost:5000.```
 
 You should see the Raspberry Pi Dashboard. It will list the available RPIs and allow you to run custom commands and tests.
 The rpis following the bash script naming convention will be periodically scanned for and any new devices will be added to the dashboard.
 
-Run vcgencmd Test
+## Run vcgencmd Test
+*    The dashboard will list all connected RPIs.
+*    Click on Run vcgencmd test next to any RPI to retrieve and display metrics such as CPU Temp, Core Voltage, and more.
 
-    The dashboard will list all connected RPIs.
-    Click on Run vcgencmd test next to any RPI to retrieve and display metrics such as CPU Temp, Core Voltage, and more.
+## Run Custom Commands
+*    Enter any Linux command in the Run Command on All RPIs field.
+*    Click Run All Command to execute the command across all connected RPIs and view the output.
 
-Run Custom Commands
-
-    Enter any Linux command in the Run Command on All RPIs field.
-    Click Run All Command to execute the command across all connected RPIs and view the output.
-
-Run All Tests
-
-    Enter a duration (in hours) for the test.
-    Optionally specify a save path for the log files.
-    Click Run All Tests to start the tests. The test progress will be displayed on the dashboard, and logs will be saved to the specified location.
+## Run All Tests
+*    Enter a duration (in hours) for the test.
+*    Click Run All Tests to start the tests. The test progress will be displayed on the dashboard, and logs will be saved to the specified location.
 
 If you cannot connect to your RPIs via hostname (rpi1.local), ensure that avahi-daemon is installed on the Raspberry Pi:
-    ```sudo apt install avahi-daemon```
+    ```bash
+    sudo apt install avahi-daemon
+    ```
 
-Ensure that your Flask app is running on the correct port (default is 5009). You can change this in the app.py file:
-    ```app.run(host='0.0.0.0', port=5009)```
+Ensure that your Flask app is running on the correct port (default is 5000). You can change this in the app.py file:
+    ```bash
+    app.run(host='0.0.0.0', port=5000)
+    ```
 
 Check your firewall settings on Windows if you cannot access the Flask app from another device on the network.
 
-# Create an executable
+## Create an executable
 Before creating the executable, make sure all required Python packages are installed. 
 You can install them using pip and the provided requirements.txt file:
-    ```pip install -r requirements.txt```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-Run the following command from the root directory to create an executable that includes the Flask app, templates, and static files:
-    ```pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py```
+### Run the following command from the root directory to create an executable that includes the Flask app, templates, and static files:
+    ```bash
+    pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py
+    ```
 
 Once the build is complete, the executable will be located in the dist folder. You can find the executable named app.exe (on Windows).
-    ```cd dist
-    ./app.exe  # On Windows```
+    ```bash
+    cd dist
+    ./app.exe  # On Windows
+    ```
 
 Upon running the executable:
-
-    The Flask server will start.
-    Your default web browser will open automatically to the address http://127.0.0.1:5000/.
+    1. The Flask server will start.
+    2. Your default web browser will open automatically to the address ```http://127.0.0.1:5000/```.
 
 Once the web browser opens, you should see the Raspberry Pi monitoring dashboard. 
 You can interact with the application as described above, running tests and commands on your Raspberry Pi devices.
