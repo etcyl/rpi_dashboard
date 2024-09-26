@@ -53,16 +53,11 @@ Activate the virtual environment:
 On macOS/Linux:
         ```source venv/bin/activate```
 
-Install Dependencies for the machine running the flask app
-
-    Install the dependencies from requirements.txt:
+Install dependencies for the machine running the flask app
         ```pip install -r requirements.txt```
 
 3. Running the Flask App
-
-    Start the Flask development server:
-
-    ```flask run --host=0.0.0.0 --port=5000```
+    ```python app.py```
 
     The app should automatically open in the default browser.
     If not, then open a browser and go to http://localhost:5000.
