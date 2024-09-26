@@ -42,25 +42,22 @@ Open PowerShell or Command Prompt and navigate to the folder where you want to p
 
 Clone the project repository and create a Python venv:
 
-        ```bash
         git clone <https://github.com/etcyl/rpi_dashboard>
         cd rpi_dashboard
         python -m venv venv
         .\venv\Scripts\activate
-        ```
 
 On macOS/Linux:
-        ```bash
+        
         source venv/bin/activate
-        ```
 
 ### Install dependencies for the machine running the flask app
-        ```bash
+        
         pip install -r requirements.txt
-        ```
 
 ## Run the Flask App
-    ```python app.py```
+        
+        python app.py
 
 The app should automatically open in the default browser (it may prompt you to allow the app).
 If not, then open a browser and go to ```http://localhost:5000.```
@@ -81,34 +78,24 @@ The rpis following the bash script naming convention will be periodically scanne
 *    Click Run All Tests to start the tests. The test progress will be displayed on the dashboard, and logs will be saved to the specified location.
 
 If you cannot connect to your RPIs via hostname (rpi1.local), ensure that avahi-daemon is installed on the Raspberry Pi:
-    ```bash
-    sudo apt install avahi-daemon
-    ```
+    ```sudo apt install avahi-daemon```
 
 Ensure that your Flask app is running on the correct port (default is 5000). You can change this in the app.py file:
-    ```bash
-    app.run(host='0.0.0.0', port=5000)
-    ```
+    ```app.run(host='0.0.0.0', port=5000)```
 
 Check your firewall settings on Windows if you cannot access the Flask app from another device on the network.
 
 ## Create an executable
 Before creating the executable, make sure all required Python packages are installed. 
 You can install them using pip and the provided requirements.txt file:
-    ```bash
-    pip install -r requirements.txt
-    ```
+    ```pip install -r requirements.txt```
 
 ### Run the following command from the root directory to create an executable that includes the Flask app, templates, and static files:
-    ```bash
-    pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py
-    ```
+    ```pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py```
 
 Once the build is complete, the executable will be located in the dist folder. You can find the executable named app.exe (on Windows).
-    ```bash
-    cd dist
-    ./app.exe  # On Windows
-    ```
+    ```cd dist
+    ./app.exe  # On Windows```
 
 Upon running the executable:
     1. The Flask server will start.
