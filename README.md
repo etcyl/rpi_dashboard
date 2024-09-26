@@ -12,7 +12,7 @@ Features:
     Run stress tests for a specified number of hours and track progress
     Log test outputs to Excel files
 
-Use the provided rpi_static_ip.sh script to setup each Raspberry Pi with a static IP and hostname.
+Use the provided ```rpi_static_ip.sh``` script to setup each Raspberry Pi with a static IP and hostname.
 This will follow a naming convention for dynamically detecting all of the RPIs on the network.
 
 Run the script with the hostname, static IP, and router gateway:
