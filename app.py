@@ -16,7 +16,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # SSH configuration for RPIs
-USERNAME = "fleetroot"
+USERNAME = "root" # Change username and password as necessary
 PASSWORD = "root"
 SSH_PORT = 22
 
