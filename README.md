@@ -40,10 +40,10 @@ Download and install Python for Windows.
 Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
 Clone the project repository and create a Python venv:
 
-        ```git clone <https://github.com/etcyl/rpi_dashboard>
+        git clone <https://github.com/etcyl/rpi_dashboard>
         cd rpi_dashboard
         python -m venv venv
-        .\venv\Scripts\activate```
+        .\venv\Scripts\activate
 
 On macOS/Linux:
         ```source venv/bin/activate```
