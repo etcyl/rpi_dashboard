@@ -14,13 +14,13 @@ Setup Instructions
 Use the provided rpi_static_ip.sh script to set up each Raspberry Pi with a static IP and hostname.
 
 Run the script with the hostname, static IP, and router gateway:
-    sudo ./rpi_static_ip.sh <hostname> <static_ip> <router_gateway>
+    ```sudo ./rpi_static_ip.sh <hostname> <static_ip> <router_gateway>```bash
 
 Example usage for first rpi:
-    sudo ./rpi_static_ip.sh rpi1 192.168.0.10 192.168.0.1
+    ```sudo ./rpi_static_ip.sh rpi1 192.168.0.10 192.168.0.1```bash
 
 Example usage for second rpi:
-    sudo ./rpi_static_ip.sh rpi2 192.168.0.11 192.168.0.1
+    ```sudo ./rpi_static_ip.sh rpi2 192.168.0.11 192.168.0.1```bash
 
 The script will:
     Set the hostname
@@ -39,48 +39,41 @@ Step 1: Install Python
 Step 2: Clone the Repository
     Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
     Clone the project repository:
-        git clone <https://github.com/your-repository/link>
-        cd your-repository/link
+        ```git clone <https://github.com/your-repository/link>
+        cd your-repository/link```bash
 
 Step 3: Setup Virtual Environment
     Create a Python virtual environment:
-        python -m venv venv
+        ```python -m venv venv```bash
 
 Activate the virtual environment:
     On Windows:
-        .\venv\Scripts\activate
+        ```.\venv\Scripts\activate```bash
 
 On macOS/Linux:
-        source venv/bin/activate
+        ```source venv/bin/activate```bash
 
 Step 4: Install Dependencies
 
     Install the dependencies from requirements.txt:
 
-    pip install -r requirements.txt
-
-Minimal requirements.txt
-
-Flask==2.3.2
-Jinja2==3.1.2
-MarkupSafe==2.1.2
-paramiko==3.2.0
-pandas==2.1.0
+    ```pip install -r requirements.txt```bash
 
 3. Running the Flask App
 
     Start the Flask development server:
 
-    flask run --host=0.0.0.0 --port=5000
+    ```flask run --host=0.0.0.0 --port=5000```bash
 
-    Open a browser and go to http://localhost:5000.
+    The app should automatically open in the default browser.
+    If not, then open a browser and go to http://localhost:5000.
 
 You should see the Raspberry Pi Dashboard. It will list the available RPIs and allow you to run custom commands and tests.
 4. Configuring the Raspberry Pi List
 
 To change or add Raspberry Pis, modify the rpi_hostnames variable in the app.py file:
 
-rpi_hostnames = ["rpi1.local", "rpi2.local"]
+```rpi_hostnames = ["rpi1.local", "rpi2.local"]```
 
 Replace rpi1.local and rpi2.local with the hostnames or IP addresses of your Pis.
 5. Usage
@@ -149,7 +142,7 @@ fi
 
 # Step 5: Configure Static IP
 # Check if the static IP is already configured
-STATIC_IP_CONFIGURED=$(grep -F "$STATIC_IP" /etc/dhcpcd.conf 2>/dev/null)
+```STATIC_IP_CONFIGURED=$(grep -F "$STATIC_IP" /etc/dhcpcd.conf 2>/dev/null)
 if [[ ! -z "$STATIC_IP_CONFIGURED" ]]; then
     echo "Static IP $STATIC_IP is already configured. Skipping this step."
 else
@@ -168,10 +161,10 @@ static routers=$GATEWAY_IP
 static domain_name_servers=8.8.8.8 8.8.4.4
 EOF
     echo "Static IP $STATIC_IP successfully configured."
-fi
+fi```bash
 
 # Step 6: Install Required Packages
-REQUIRED_PACKAGES=("net-tools")
+```REQUIRED_PACKAGES=("net-tools")
 for package in "${REQUIRED_PACKAGES[@]}"; do
     if dpkg -l | grep -q $package; then
         echo "Package $package is already installed. Skipping."
@@ -179,7 +172,7 @@ for package in "${REQUIRED_PACKAGES[@]}"; do
         echo "Installing package $package"
         apt-get install -y $package || error_exit "Failed to install $package"
     fi
-done
+done```bash
 
 # Step 7: Create Log Directory
 if [ -d "$LOG_DIR" ]; then
@@ -235,7 +228,8 @@ Upon running the executable:
 
 Once the web browser opens, you should see the Raspberry Pi monitoring dashboard. You can interact with the application as described above, running tests and commands on your Raspberry Pi devices.
 
-```> .\app.exe
+```
+.\app.exe
 2024-09-25 22:30:02,959 - INFO - Starting discovery of RPIs...
 2024-09-25 22:30:03,057 - INFO - Discovered RPI: rpi1.local
 2024-09-25 22:30:03,149 - INFO - Discovered RPI: rpi2.local
