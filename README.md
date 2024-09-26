@@ -34,14 +34,10 @@ Install Python
     Download and install Python for Windows.
     Ensure you check "Add Python to PATH" during the installation.
 
-Clone the Repository
-
 Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
 Clone the project repository:
-        git clone <https://github.com/your-repository/link>
-        cd your-repository/link
-
-Setup Virtual Environment
+        ```git clone <https://github.com/your-repository/link>
+        cd your-repository/link```
 
 Create a Python virtual environment:
         python -m venv venv
