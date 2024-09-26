@@ -39,9 +39,8 @@ Step 1: Install Python
 Step 2: Clone the Repository
     Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
     Clone the project repository:
-        ```git clone <https://github.com/your-repository/link>```
-        
-        ```cd your-repository/link```
+        ```git clone <https://github.com/your-repository/link>
+        cd your-repository/link```
 
 Step 3: Setup Virtual Environment
     Create a Python virtual environment:
