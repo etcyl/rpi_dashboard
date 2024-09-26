@@ -7,8 +7,7 @@ Features
     Run stress tests for a specified number of hours and track progress
     Log test outputs to Excel files
 
-Setup Instructions
-1. Raspberry Pi Setup - Run the static ip and hostname script
+Raspberry Pi Setup - run the static ip and hostname script
 
 Use the provided rpi_static_ip.sh script to set up each Raspberry Pi with a static IP and hostname.
 
@@ -28,9 +27,7 @@ The script will:
     Install required packages like net-tools
     Create a log directory (/home/pi/logs)
 
-Once the script completes, reboot the Raspberry Pi to apply the changes.
-
-2. Setting Up the Flask App on Windows
+Once the script completes, reboot the Raspberry Pi (the script will ask if you want to reboot) to apply the changes.
 
 Install Python
     Download and install Python for Windows.
