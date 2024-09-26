@@ -21,6 +21,7 @@ Example usage for second rpi:
     ```sudo ./rpi_static_ip.sh rpi2 192.168.0.11 192.168.0.1```
 
 The script will:
+
     Set the hostname
     Enable SSH
     Configure a static IP
