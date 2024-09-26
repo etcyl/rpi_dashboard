@@ -33,8 +33,7 @@ The script will:
 
 Once the script completes, reboot the Raspberry Pi (the script will ask if you want to reboot) to apply the changes.
 
-Install Python
-    Download and install Python for Windows.
+Download and install Python for Windows.
     Ensure you check "Add Python to PATH" during the installation.
 
 Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
