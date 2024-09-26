@@ -67,7 +67,7 @@ The rpis following the bash script naming convention will be periodically scanne
 
 ## Run vcgencmd Test
 *    The dashboard will list all connected RPIs.
-*    Click on Run vcgencmd test next to any RPI to retrieve and display metrics such as CPU Temp, Core Voltage, and more.
+*    Click on Run vcgencmd test next to any RPI to retrieve and display vcgencmd metrics.
 
 ## Run Custom Commands
 *    Enter any Linux command in the Run Command on All RPIs field.
@@ -75,7 +75,7 @@ The rpis following the bash script naming convention will be periodically scanne
 
 ## Run All Tests
 *    Enter a duration (in hours) for the test.
-*    Click Run All Tests to start the tests. The test progress will be displayed on the dashboard, and logs will be saved to the specified location.
+*    Click Run All Tests to start the tests. The test progress will be displayed on the dashboard, and logs will be saved to the local root directory.
 
 If you cannot connect to your RPIs via hostname (rpi1.local), ensure that avahi-daemon is installed on the Raspberry Pi:
 
@@ -88,7 +88,8 @@ Ensure that your Flask app is running on the correct port (default is 5000). You
 Check your firewall settings on Windows if you cannot access the Flask app from another device on the network.
 
 ## Create an executable
-Before creating the executable, make sure all required Python packages are installed. 
+Before creating the executable, make sure all required Python packages are installed.
+Windows 11 users can try running the executable in the GitHub [here](https://github.com/etcyl/rpi_dashboard/blob/main/windows_exe/app.exe).
 You can install them using pip and the provided requirements.txt file:
 
     pip install -r requirements.txt
