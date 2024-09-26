@@ -42,7 +42,7 @@ Step 2: Clone the Repository
         ```git clone <https://github.com/your-repository/link>
         cd your-repository/link```
 
-Step 3: Setup Virtual Environment
+Setup Virtual Environment
     Create a Python virtual environment:
         ```python -m venv venv```
 
@@ -53,7 +53,7 @@ Activate the virtual environment:
 On macOS/Linux:
         ```source venv/bin/activate```
 
-Step 4: Install Dependencies
+Install Dependencies for the machine running the flask app
 
     Install the dependencies from requirements.txt:
         ```pip install -r requirements.txt```
