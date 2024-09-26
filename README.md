@@ -45,78 +45,66 @@ Clone the project repository:
 
 Setup Virtual Environment
 
-    Create a Python virtual environment:
-        ```python -m venv venv```
+Create a Python virtual environment:
+        python -m venv venv
 
 Activate the virtual environment:
 
-    On Windows:
-        ```.\venv\Scripts\activate```
+On Windows:
+        .\venv\Scripts\activate
 
 On macOS/Linux:
 
-        ```source venv/bin/activate```
+        source venv/bin/activate
 
 Install dependencies for the machine running the flask app
-        ```pip install -r requirements.txt```
+        pip install -r requirements.txt
 
 3. Running the Flask App
-    ```python app.py```
+    python app.py
 
-    The app should automatically open in the default browser.
-    If not, then open a browser and go to http://localhost:5000.
+The app should automatically open in the default browser.
+If not, then open a browser and go to http://localhost:5000.
 
 You should see the Raspberry Pi Dashboard. It will list the available RPIs and allow you to run custom commands and tests.
 The rpis following the hostname naming convention will be periodically scanned for and any new devices will be added to the dashboard.
 
-Replace rpi1.local and rpi2.local with the hostnames or IP addresses of your Pis.
-
 Run vcgencmd Test
-
     The dashboard will list all connected RPIs.
     Click on Run vcgencmd test next to any RPI to retrieve and display metrics such as CPU Temp, Core Voltage, and more.
 
 Run Custom Commands
-
     Enter any Linux command in the Run Command on All RPIs field.
     Click Run All Command to execute the command across all connected RPIs and view the output.
 
 Run All Tests
-
     Enter a duration (in hours) for the test.
     Optionally specify a save path for the log files.
     Click Run All Tests to start the tests. The test progress will be displayed on the dashboard, and logs will be saved to the specified location.
 
 Troubleshooting
-    
-    If you cannot connect to your RPIs via hostname (rpi1.local), ensure that avahi-daemon is installed on the Raspberry Pi:
-
-sudo apt install avahi-daemon
+If you cannot connect to your RPIs via hostname (rpi1.local), ensure that avahi-daemon is installed on the Raspberry Pi:
+    sudo apt install avahi-daemon
 
 Ensure that your Flask app is running on the correct port (default is 5009). You can change this in the app.py file:
-
-
-```app.run(host='0.0.0.0', port=5009)```
+    app.run(host='0.0.0.0', port=5009)
 
 Check your firewall settings on Windows if you cannot access the Flask app from another device on the network.
 
 # Create an executable
 Before creating the executable, make sure all required Python packages are installed. You can install them using pip and the provided requirements.txt file:
-
-```pip install -r requirements.txt```
+    pip install -r requirements.txt
 
 Run the following command from the root directory to create an executable that includes the Flask app, templates, and static files:
-
-```pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py```
+    pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py
 
 Once the build is complete, the executable will be located in the dist folder. You can find the executable named app.exe (on Windows).
-
-```cd dist```
-```./app.exe  # On Windows```
+    cd dist
+    ./app.exe  # On Windows
 
 Upon running the executable:
-    The Flask server will start.
-    Your default web browser will open automatically to the address http://127.0.0.1:5000/.
+The Flask server will start.
+Your default web browser will open automatically to the address http://127.0.0.1:5000/.
 
 Once the web browser opens, you should see the Raspberry Pi monitoring dashboard. You can interact with the application as described above, running tests and commands on your Raspberry Pi devices.
 
