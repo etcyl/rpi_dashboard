@@ -37,7 +37,7 @@ The script will:
 
 Once the script completes, reboot the Raspberry Pi (the script will ask if you want to reboot) to apply the changes.
 
-### Download and install Python for Windows.
+### Download and install Python for Windows
 *   Ensure you check "Add Python to PATH" during the installation.
 
 Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
@@ -57,7 +57,7 @@ On macOS/Linux:
         
         pip install -r requirements.txt
 
-## Run the Flask App
+## Run the app
         
         python app.py
 
@@ -96,7 +96,7 @@ You can install them using pip and the provided requirements.txt file:
 
     pip install -r requirements.txt
 
-### Run the following command from the root directory to create an executable that includes the Flask app, templates, and static files:
+This command will will run from the root directory to create an executable that includes the Flask app, templates, and static files:
 
     pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py
 
