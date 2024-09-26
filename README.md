@@ -14,13 +14,13 @@ Setup Instructions
 Use the provided rpi_static_ip.sh script to set up each Raspberry Pi with a static IP and hostname.
 
 Run the script with the hostname, static IP, and router gateway:
-    ```sudo ./rpi_static_ip.sh <hostname> <static_ip> <router_gateway>```bash
+    ```sudo ./rpi_static_ip.sh <hostname> <static_ip> <router_gateway>```
 
 Example usage for first rpi:
-    ```sudo ./rpi_static_ip.sh rpi1 192.168.0.10 192.168.0.1```bash
+    ```sudo ./rpi_static_ip.sh rpi1 192.168.0.10 192.168.0.1```
 
 Example usage for second rpi:
-    ```sudo ./rpi_static_ip.sh rpi2 192.168.0.11 192.168.0.1```bash
+    ```sudo ./rpi_static_ip.sh rpi2 192.168.0.11 192.168.0.1```
 
 The script will:
     Set the hostname
@@ -40,29 +40,29 @@ Step 2: Clone the Repository
     Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
     Clone the project repository:
         ```git clone <https://github.com/your-repository/link>
-        cd your-repository/link```bash
+        cd your-repository/link```
 
 Step 3: Setup Virtual Environment
     Create a Python virtual environment:
-        ```python -m venv venv```bash
+        ```python -m venv venv```
 
 Activate the virtual environment:
     On Windows:
-        ```.\venv\Scripts\activate```bash
+        ```.\venv\Scripts\activate```
 
 On macOS/Linux:
-        ```source venv/bin/activate```bash
+        ```source venv/bin/activate```
 
 Step 4: Install Dependencies
 
     Install the dependencies from requirements.txt:
-        ```pip install -r requirements.txt```bash
+        ```pip install -r requirements.txt```
 
 3. Running the Flask App
 
     Start the Flask development server:
 
-    ```flask run --host=0.0.0.0 --port=5000```bash
+    ```flask run --host=0.0.0.0 --port=5000```
 
     The app should automatically open in the default browser.
     If not, then open a browser and go to http://localhost:5000.
@@ -97,18 +97,18 @@ sudo apt install avahi-daemon
 Ensure that your Flask app is running on the correct port (default is 5009). You can change this in the app.py file:
 
 
-```app.run(host='0.0.0.0', port=5009)```python
+```app.run(host='0.0.0.0', port=5009)```
 
 Check your firewall settings on Windows if you cannot access the Flask app from another device on the network.
 
 # Create an executable
 Before creating the executable, make sure all required Python packages are installed. You can install them using pip and the provided requirements.txt file:
 
-```pip install -r requirements.txt```bash
+```pip install -r requirements.txt```
 
 Run the following command from the root directory to create an executable that includes the Flask app, templates, and static files:
 
-```pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py```python
+```pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py```
 
 Once the build is complete, the executable will be located in the dist folder. You can find the executable named app.exe (on Windows).
 
