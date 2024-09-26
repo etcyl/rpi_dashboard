@@ -104,6 +104,7 @@ Once the build is complete, the executable will be located in the dist folder. Y
     ./app.exe  # On Windows
 
 Upon running the executable:
+
     1. The Flask server will start.
     2. Your default web browser will open automatically to the address ```http://127.0.0.1:5000/```.
 
