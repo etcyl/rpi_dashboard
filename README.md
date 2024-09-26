@@ -39,6 +39,7 @@ Download and install Python for Windows.
 
 Open PowerShell or Command Prompt and navigate to the folder where you want to place the project.
 Clone the project repository and create a Python venv:
+
         ```git clone <https://github.com/etcyl/rpi_dashboard>
         cd rpi_dashboard
         python -m venv venv
