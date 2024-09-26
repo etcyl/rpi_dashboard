@@ -4,7 +4,9 @@
 ![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-22%20020506.png)
 ![alt text](https://github.com/etcyl/rpi_dashboard/blob/main/Screenshot%202024-09-22%20020601.png)
 
-This project is a Flask-based web dashboard to monitor and run commands on multiple Raspberry Pi devices remotely. The dashboard allows users to view key metrics, run custom commands, and run stress tests on all connected RPIs. This guide provides a step-by-step walkthrough of setting up the RPIs, the Flask app, and running it from a Windows PC.
+This project is a Flask-based web dashboard to monitor and run commands on multiple Raspberry Pi devices remotely. 
+The dashboard allows users to view specified metrics, run custom commands and run stress tests on all connected RPIs. 
+This guide provides a step-by-step walkthrough of setting up the RPIs, the Flask app, and running it from a Windows PC.
 Features:
 
     Monitor Raspberry Pi metrics (CPU Temp, Core Voltage, CPU Frequency, etc.)
@@ -89,7 +91,8 @@ Ensure that your Flask app is running on the correct port (default is 5009). You
 Check your firewall settings on Windows if you cannot access the Flask app from another device on the network.
 
 # Create an executable
-Before creating the executable, make sure all required Python packages are installed. You can install them using pip and the provided requirements.txt file:
+Before creating the executable, make sure all required Python packages are installed. 
+You can install them using pip and the provided requirements.txt file:
     pip install -r requirements.txt
 
 Run the following command from the root directory to create an executable that includes the Flask app, templates, and static files:
@@ -103,7 +106,8 @@ Upon running the executable:
 The Flask server will start.
 Your default web browser will open automatically to the address http://127.0.0.1:5000/.
 
-Once the web browser opens, you should see the Raspberry Pi monitoring dashboard. You can interact with the application as described above, running tests and commands on your Raspberry Pi devices.
+Once the web browser opens, you should see the Raspberry Pi monitoring dashboard. 
+You can interact with the application as described above, running tests and commands on your Raspberry Pi devices.
 
 ```
 .\app.exe
